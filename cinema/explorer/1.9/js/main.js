@@ -108,18 +108,23 @@ set_database_list_type()
 // first case, if there is no databaseList set
 
 if (databaseListType == "json") {
-    // load the requested database.json file
-    var jsonRequest = new XMLHttpRequest();
-    jsonRequest.open("GET", databaseList, true);
-    jsonRequest.onreadystatechange = function() {
-        if (jsonRequest.readyState === 4) {
-            if (jsonRequest.status === 200 || jsonRequest.status === 0) {
-                cinemaDatabases = JSON.parse(jsonRequest.responseText);
-                load_databases()
-            }
-        }
-    }
-    jsonRequest.send(null);
+    // // load the requested database.json file
+    // var jsonRequest = new 1pRequest();
+    // console.log(databaseList)
+    // jsonRequest.open("GET", databaseList, true);
+    // jsonRequest.onreadystatechange = function() {
+    //     if (jsonRequest.readyState === 4) {
+    //         if (jsonRequest.status === 200 || jsonRequest.status === 0) {
+    //             cinemaDatabases = JSON.parse(jsonRequest.responseText);
+    //             load_databases()
+    //         }
+    //     }
+    // }
+    // jsonRequest.send(null);
+
+    cinemaDatabases = databases;
+    load_databases()
+
 } else {
     // if there is a single DB set, pass that on
     cinemaDatabases = create_database_list( databaseList )
@@ -201,9 +206,15 @@ function load() {
 	//Will call doneLoading if succesful, otherwise wil call loadingError
 	currentDb = new CINEMA_COMPONENTS.Database(
 		currentDbInfo.directory,
-		doneLoading,
+        currentDbInfo.csvs,
+		doneLoadingFake,
 		loadingError,
 		currentDbInfo.query);
+
+        // we hae to use doneLoadingFake b/c this relies on XMLHttp request future,
+        // so if we pass true doneLoading as call back above, currentDb won't exist yet
+        // and doneLoading uses currentDb directly
+        doneLoading();
 }
 
 /**
@@ -218,6 +229,10 @@ function loadingError(error) {
  * Builds components
  * and sets up event listeners
  */
+function doneLoadingFake() {
+
+}
+
 function doneLoading() {
 	loaded = true;
 
